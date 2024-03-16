@@ -1,5 +1,11 @@
 import pandas as pd
 import numpy as np
+import os
+
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+lots_path = os.path.join(BASE_DIR, 'Lots_analysis', 'figs', 'univarie', 'lots')
 
 df_lots = pd.read_csv('data/Lots.csv')
 
@@ -75,5 +81,5 @@ for bar, percentage in zip(bars.patches, percentage_values):
 plt.title('Bar plot - accelerated')
 plt.xlabel('Category')
 plt.ylabel('Count')
-plt.savefig('figs/accelerated.png')
+plt.savefig(f'{lots_path}/accelerated.png')
 plt.show()

@@ -3,7 +3,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import chi2_contingency
 import seaborn as sns
+import os
 
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+qualitatives = os.path.join(BASE_DIR, 'Lots_analysis', 'figs', 'bivarie', '2qualitatives')
+quantitatives = os.path.join(BASE_DIR, 'Lots_analysis', 'figs', 'bivarie', '2quantitatives')
 
 def bool_switch(row):
     if row == 'N' or row == '0' or row == 0:
@@ -74,7 +80,9 @@ def bool_categorical_bivariate(df, att1, att2):
     ax.legend(loc='upper left', ncols=2)
     ax.set_yscale('log')
     ax.set_ylim(0, max(max(value_counts_att1), max(value_counts_att2)) * 100)
-    plt.show()
+    # plt.show()
+    # save the plot
+    plt.savefig(f'{qualitatives}/bool_{att1}_{att2}.png')
 
     return ax
 
@@ -90,7 +98,9 @@ def categorical_bivariate(df, att1, att2):
 
     plt.ylabel('Frequency (log scale)')
     plt.title(f'{att1} vs {att2}')
-    plt.show()
+    # plt.show()
+    # save the plot
+    plt.savefig(f'{qualitatives}/{att1}_{att2}.png')
 
 
 def cramers_v(confusion_matrix):
@@ -128,8 +138,9 @@ def create_cramer_v_heatmap(df, variables):
     plt.figure(figsize=(10, 8))
     sns.heatmap(correlations.astype(float), annot=True, cmap="coolwarm", fmt=".2f", linewidths=0.5)
     plt.title("Cramér's V Correlation Heatmap")
-    plt.show()
-
+    # plt.show()
+    # save the plot
+    plt.savefig(f'{qualitatives}/cramer_v_heatmap.png')
 
 def numeric_bivariate_scatter(df, num_var1, num_var2, num_bins=20):
     df_filtered = df[[num_var1, num_var2]].dropna()
@@ -141,7 +152,9 @@ def numeric_bivariate_scatter(df, num_var1, num_var2, num_bins=20):
     plt.title(f'Scatter Plot (log scale): {num_var1} vs {num_var2}')
     plt.xlabel(f'Log({num_var1})')
     plt.ylabel(f'Log({num_var2})')
-    plt.show()
+    # plt.show()
+    # save the plot
+    plt.savefig(f'{quantitatives}/scatter_{num_var1}_{num_var2}.png')
 
 
 def correlation_heatmap(df, num_vars):
@@ -149,8 +162,9 @@ def correlation_heatmap(df, num_vars):
     corr_matrix = df[num_vars].corr(method='spearman')  # You can change 'spearman' to 'pearson' for Pearson correlation
     sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', fmt=".2f", linewidths=.5)
     plt.title('Correlation Heatmap')
-    plt.show()
-
+    # plt.show()
+    # save the plot
+    plt.savefig(f'{quantitatives}/num_correlation_heatmap.png')
 
 def execute_file(df_lots):
     bool_couples = [
@@ -215,22 +229,22 @@ def execute_file(df_lots):
     ]
 
     numeric_pairs = [
-        ('awardEstimatedPrice', 'awardPrice'),
-        ('awardEstimatedPrice', 'contractDuration'),
-        ('awardEstimatedPrice', 'publicityDuration'),
-        ('awardPrice', 'contractDuration'),
+        # ('awardEstimatedPrice', 'awardPrice'),
+        # ('awardEstimatedPrice', 'contractDuration'),
+        # ('awardEstimatedPrice', 'publicityDuration'),
+        # ('awardPrice', 'contractDuration'),
         ('awardPrice', 'publicityDuration'),
         ('contractDuration', 'publicityDuration')
     ]
-
-    for couple in bool_couples:
-        bool_categorical_bivariate(df_lots.copy(), couple[0], couple[1])
-    for couple in couples:
-        categorical_bivariate(df_lots.copy(), couple[0], couple[1])
-    variables = ['cancelled', 'outOfDirectives', 'onBehalf', 'jointProcurement', 'fraAgreement',
-                 'accelerated', 'contractorSme', 'subContracted', 'gpa', 'typeOfContract', 'cpv_name']
-    create_cramer_v_heatmap(df_lots.copy(), variables)
-
+    #
+    # for couple in bool_couples:
+    #     bool_categorical_bivariate(df_lots.copy(), couple[0], couple[1])
+    # for couple in couples:
+    #     categorical_bivariate(df_lots.copy(), couple[0], couple[1])
+    # variables = ['cancelled', 'outOfDirectives', 'onBehalf', 'jointProcurement', 'fraAgreement',
+    #              'accelerated', 'contractorSme', 'subContracted', 'gpa', 'typeOfContract', 'cpv_name']
+    # create_cramer_v_heatmap(df_lots.copy(), variables)
+    #
     # Scatter plots for numeric variable pairs
     for pair in numeric_pairs:
         numeric_bivariate_scatter(df_lots, pair[0], pair[1])
