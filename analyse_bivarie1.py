@@ -229,21 +229,21 @@ def execute_file(df_lots):
     ]
 
     numeric_pairs = [
-        # ('awardEstimatedPrice', 'awardPrice'),
-        # ('awardEstimatedPrice', 'contractDuration'),
-        # ('awardEstimatedPrice', 'publicityDuration'),
-        # ('awardPrice', 'contractDuration'),
+        ('awardEstimatedPrice', 'awardPrice'),
+        ('awardEstimatedPrice', 'contractDuration'),
+        ('awardEstimatedPrice', 'publicityDuration'),
+        ('awardPrice', 'contractDuration'),
         ('awardPrice', 'publicityDuration'),
         ('contractDuration', 'publicityDuration')
     ]
-    #
-    # for couple in bool_couples:
-    #     bool_categorical_bivariate(df_lots.copy(), couple[0], couple[1])
-    # for couple in couples:
-    #     categorical_bivariate(df_lots.copy(), couple[0], couple[1])
-    # variables = ['cancelled', 'outOfDirectives', 'onBehalf', 'jointProcurement', 'fraAgreement',
-    #              'accelerated', 'contractorSme', 'subContracted', 'gpa', 'typeOfContract', 'cpv_name']
-    # create_cramer_v_heatmap(df_lots.copy(), variables)
+
+    for couple in bool_couples:
+        bool_categorical_bivariate(df_lots.copy(), couple[0], couple[1])
+    for couple in couples:
+        categorical_bivariate(df_lots.copy(), couple[0], couple[1])
+    variables = ['cancelled', 'outOfDirectives', 'onBehalf', 'jointProcurement', 'fraAgreement',
+                 'accelerated', 'contractorSme', 'subContracted', 'gpa', 'typeOfContract', 'cpv_name']
+    create_cramer_v_heatmap(df_lots.copy(), variables)
     #
     # Scatter plots for numeric variable pairs
     for pair in numeric_pairs:
