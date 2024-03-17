@@ -1,5 +1,8 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import folium
+import pandas as pd
+from selenium import webdriver
 
 variables = ['city', 'zipcode', 'country', 'department']
 
@@ -53,5 +56,30 @@ def agents_addresses(df_agents_copy):
         plt.savefig('agents_stats/'+var+'_count_top_20.png')
         #plt.show()
 
+def create_maps(df_agents_copy):
+    percentages = [0.05, 0.001]
+    data = df_agents_copy.dropna(subset=['latitude', 'longitude'])
+
+    for per in percentages:
+
+        # Samples the data
+        sampled_data = data.sample(frac=per, random_state=42)
+
+        # Create a folium map centered at the mean of latitude and longitude
+        map_center = [sampled_data['latitude'].mean(), sampled_data['longitude'].mean()]
+        mymap = folium.Map(location=map_center, zoom_start=10)
+
+        # Add markers for each data point
+        for index, row in sampled_data.iterrows():
+            folium.Marker(
+                location=[row['latitude'], row['longitude']],
+                popup=f"Lat: {row['latitude']}, Lon: {row['longitude']}"
+            ).add_to(mymap)
+
+        percentage_str = str(per).replace('.', '_')
+        # Save the map as an HTML file
+        mymap.save('agents_stats/map_with_dots_'+percentage_str+'.html')
+
 def execute_file(df_agents):
     agents_addresses(df_agents.copy())
+    create_maps(df_agents.copy())
