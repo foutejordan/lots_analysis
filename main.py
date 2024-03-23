@@ -14,5 +14,6 @@ if __name__ == '__main__':
     analyse_bivarie1.execute_file(df_lots)
     single_var_agents.execute_file(df_agents)
     single_var_lots.execute_file(df_lots)
-    two_variables_analysis_award_dates.execute_file()
     cpv_single_var.execute_file(df_lots)
+    two_variables_analysis_award_dates.execute_file()
+    

@@ -58,6 +58,15 @@ file_path = 'data/Lots.csv'
 # Read the CSV file into a pandas DataFrame
 df_Lots = pd.read_csv(file_path, parse_dates=['awardDate'], low_memory=False)
 
+def point_biserial_correlation(df, category_column, numeric_column):
+    # Convert category_column to binary (0s and 1s)
+    binary_column = (df[category_column] == df[category_column].mode().iloc[0]).astype(int)
+    
+    # Compute Pearson correlation coefficient between binary_column and numeric_column
+    correlation = df[[binary_column.name, numeric_column]].corr().iloc[0, 1]
+    
+    return correlation
+
 def filter_dates(df_lots_copy):
     df_lots_copy['awardDate'] = pd.to_datetime(df_lots_copy['awardDate'])
     start_date = datetime(2009, 1, 1)
@@ -91,6 +100,12 @@ def draw_quantitatives_by_date(df_Lots_copy):
     for variable in variables:
 
         monthly_distribution = df_Lots_filtered.groupby(months)[variable].std().dropna()
+
+        point_biserial_corr = point_biserial_correlation(df_Lots_filtered, 'awardDate', variable)
+
+        # Write the correlation coefficient to a file
+        with open('figs/two_variables_award_dates/'+variable+'_and_date_point_biserial_correlation.txt', 'w') as file:
+            file.write(f"Point Biserial Correlation: {point_biserial_corr}")
 
         plt.figure(figsize=(15, 6))
         monthly_distribution.plot(marker='o', linestyle='-', color='b')
@@ -167,7 +182,7 @@ def draw_qualitatives_by_date(df_Lots):
     plt.ylabel('Category Count/Percentage')
     plt.legend(title='Category', bbox_to_anchor=(1.05, 1), loc='upper left')
     plt.grid(True)
-    plt.show()
+    #plt.show()
 
 def draw_typeOfContracts_by_date(df_Lots):
 
@@ -189,7 +204,7 @@ def draw_typeOfContracts_by_date(df_Lots):
     plt.ylabel('Category Count/Percentage')
     plt.legend(title='Category', bbox_to_anchor=(1.05, 1), loc='upper left')
     plt.grid(True)
-    plt.show()
+    #plt.show()
 
 def draw_typeOfContracts_by_date_over_year(df_Lots):
 
@@ -224,7 +239,7 @@ def draw_typeOfContracts_by_date_over_year(df_Lots):
     plt.legend(title='Category', bbox_to_anchor=(1.05, 1), loc='upper left')
     plt.grid(True)
     plt.savefig('figs/two_variables_award_dates/typeOfContract_by_award_dates_cyclic.png')
-    plt.show()
+    #plt.show()
     
 def execute_file():
     draw_quantitatives_by_date(df_Lots.copy())
