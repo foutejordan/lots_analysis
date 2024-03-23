@@ -18,7 +18,7 @@ def agents_addresses(df_agents_copy):
         max_occurrences = count.max()
 
         # Write them in file
-        with open('agents_stats/'+var+'_statistics.txt', 'w') as file:
+        with open('figs/agents_stats/'+var+'_statistics.txt', 'w') as file:
             file.write(f"Mean: {mean_occurrences}\n")
             file.write(f"Standard Deviation: {std_dev_occurrences}\n")
             file.write(f"Quantiles:\n{quantiles_occurrences}\n")
@@ -26,34 +26,39 @@ def agents_addresses(df_agents_copy):
             file.write(f"Max: {max_occurrences}\n")
 
         # Write each city along with its count to a file
-        with open('agents_stats/'+var+'_count.csv', 'w') as file:
+        with open('figs/agents_stats/'+var+'_count.csv', 'w') as file:
             for item, ct in count.items():
                 print(f"{item}, {ct}", file=file)
 
         ## Draw graphs
 
         # All data
-        df = pd.read_csv('agents_stats/'+var+'_count.csv', header=None, names=[var, 'Occurences'])
+        df = pd.read_csv('figs/agents_stats/'+var+'_count.csv', header=None, names=[var, 'Occurences'])
         occurences = df['Occurences'].tolist()
-        n, bins, patches = plt.hist(occurences, bins= 200 ,edgecolor='black')
+        count.plot(kind='bar', color='skyblue')
+        if var not in ['city', 'zipcode']:
+            plt.xticks(rotation=45, ha='right') 
+        else:
+            plt.xticks([])
+        plt.title(var+' by Occurrence')
         plt.xlabel(var)
         plt.ylabel('Number of Occurrences')
         plt.yscale('log')
-        plt.savefig('agents_stats/'+var+'_count_log.png')
+        plt.savefig('figs/agents_stats/'+var+'_count_log.png')
         #plt.show()
                 
         # Top 20
         top_20 = count.head(20)
+        plt.yscale('linear')
 
         plt.figure(figsize=(12, 6))
         top_20.plot(kind='bar', color='skyblue')
         plt.title('Top 20 '+var+' by Occurrence')
         plt.xlabel('Top 20 '+var)
         plt.ylabel('Number of Occurrences')
-        plt.xticks(rotation=45, ha='right') 
         plt.tight_layout()
 
-        plt.savefig('agents_stats/'+var+'_count_top_20.png')
+        plt.savefig('figs/agents_stats/'+var+'_count_top_20.png')
         #plt.show()
 
 def create_maps(df_agents_copy):
@@ -78,7 +83,7 @@ def create_maps(df_agents_copy):
 
         percentage_str = str(per).replace('.', '_')
         # Save the map as an HTML file
-        mymap.save('agents_stats/map_with_dots_'+percentage_str+'.html')
+        mymap.save('figs/agents_stats/map_with_dots_'+percentage_str+'.html')
 
 def execute_file(df_agents):
     agents_addresses(df_agents.copy())
