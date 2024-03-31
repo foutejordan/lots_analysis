@@ -4,7 +4,7 @@ import single_var_agents
 import two_variables_analysis_award_dates
 import cpv_single_var
 import single_var_lots
-import nettoyage.add_to_agents_from_siren
+import nettoyage.add_from_siren
 import nettoyage.dates
 
 df_lots = pd.read_csv('data/Lots.csv', dtype=str)
@@ -21,7 +21,7 @@ if __name__ == '__main__':
 
     '''Nettoyage'''
     #Laisser commenter
-    #df_agents_siret = nettoyage.add_to_agents_from_siren.execute_file(df_agents)
+    #df_agents_siret = nettoyage.add_from_siren.execute_file(df_agents)
     df_lots_dates = nettoyage.dates.execute_file(df_lots)
 
     
