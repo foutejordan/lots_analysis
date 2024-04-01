@@ -466,15 +466,9 @@ def execute_file():
     
     new_lots_df = analyse_Lots(new_lots_df)
     new_criteria_df = analyse_criteria(new_criteria_df)
-    
 
-    
+    return new_lots_df, new_agents_df, new_criteria_df, new_lotbuyers_df, new_lotsuppliers_df, new_names_df
 
-
-
-
-
-execute_file()
 
     
 
