@@ -54,7 +54,7 @@ def stats(target_column, version):
 
 
 def delete_rows_with_too_much_nan():
-    data_paths = ["data/Lots.csv", "data/Agents.csv", "data/Criteria.csv", "data/LotBuyers.csv", "data/LotSuppliers.csv", "data/Names.csv"]
+    data_paths = ["../data/Lots.csv", "../data/Agents.csv", "../data/Criteria.csv", "../data/LotBuyers.csv", "../data/LotSuppliers.csv", "../data/Names.csv"]
     new_dataframes = []
     for data_path in data_paths :
         #on enlève les lignes où il manque au moins 70% des données
@@ -289,7 +289,7 @@ def analyse_Lots(dataframe):
     nouveau_dataframe = dataframe.copy()
     nouveau_dataframe['lotsNumber'] = clean_values
     
-    nouveau_dataframe['publicityDuration'] = nouveau_dataframe['publicityDuration'].apply(lambda x: float(x) if float(x) >= 0 else 0)
+    nouveau_dataframe['publicityDuration'] = nouveau_dataframe['publicityDuration'].apply(lambda x: float(x) if isinstance(x, str) and float(x) >= 0 else np.nan)
 
     nouveau_dataframe['numberTendersSme'] = nouveau_dataframe['contractDuration'].fillna(0)
 
@@ -303,7 +303,7 @@ def analyse_Lots(dataframe):
     
     colones = [colonne_contractDuration, colonne_publicityDuration, colonne_numberTendersSme]
     
-    """for colonne in colones :
+    for colonne in colones :
         
     
         dict_valeur = colonne.value_counts()
@@ -314,7 +314,7 @@ def analyse_Lots(dataframe):
         nombre_total_occurrences = dict_valeur.sum()
         print("nombre de vide : ", nombre_de_lignes - nombre_total_occurrences)
         
-        stats(colonne, 1)"""
+        stats(colonne, 1)
     
     return nouveau_dataframe
     
