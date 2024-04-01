@@ -84,7 +84,7 @@ def graph_violin(colonne_x, colonne_y, name_x, name_y, name_df):
     verif_path(entire_path)
     plt.savefig(entire_path)
     
-    plt.show()
+    #plt.show()
     
     
     
@@ -105,7 +105,7 @@ def categorical_bivariate(df, att1, att2, name_df):
     verif_path(entire_path)
     plt.savefig(entire_path)
     
-    plt.show()
+    #plt.show()
 
 
 
