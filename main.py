@@ -24,6 +24,9 @@ if __name__ == '__main__':
     '''Nettoyage'''
     #Laisser commenter
     #df_agents_siret = nettoyage.add_from_siren.execute_file(df_agents)
+
     df_lots = nettoyage.dates.execute_file(df_lots)
     df_lots = data_cleaning.clean_data(df_lots)
+
+    df_lots.to_csv('data/Lots_cleaned.csv', index=False)
     
