@@ -189,9 +189,11 @@ def execute_file(df_lots):
         ('jointProcurement', 'accelerated'),
         ('jointProcurement', 'contractorSme'),
         ('jointProcurement', 'subContracted'),
+        ('jointProcurement', 'subContracted'),
         ('jointProcurement', 'gpa'),
         ('jointProcurement', 'cancelled'),
         ('fraAgreement', 'accelerated'),
+        ('fraAgreement', 'fraEstimated'),
         ('fraAgreement', 'contractorSme'),
         ('fraAgreement', 'subContracted'),
         ('fraAgreement', 'gpa'),
@@ -224,8 +226,15 @@ def execute_file(df_lots):
         ('typeOfContract', 'contractorSme'),
         ('typeOfContract', 'subContracted'),
         ('typeOfContract', 'gpa'),
-        ('typeOfContract', 'cpv_name'),
-        ('cpv_name', 'cancelled')
+        ('cpv_name', 'typeOfContract'),
+        ('cpv_name', 'cancelled'),
+        ('cpv_name', 'subContracted'),
+        ('topType', 'outOfDirectives'),
+        ('topType', 'gpa'),
+        ('cpv_name', 'renewal'),
+        ('renewal', 'typeOfContract'),
+        ('multipleCae', 'jointProcurement'),
+        ('multipleCae', 'onBehalf'),
     ]
 
     numeric_pairs = [
@@ -234,21 +243,22 @@ def execute_file(df_lots):
         ('awardEstimatedPrice', 'publicityDuration'),
         ('awardPrice', 'contractDuration'),
         ('awardPrice', 'publicityDuration'),
-        ('contractDuration', 'publicityDuration')
+        ('contractDuration', 'publicityDuration'),
+        ('numberTendersSme', 'numberTenders')
     ]
 
     for couple in bool_couples:
         bool_categorical_bivariate(df_lots.copy(), couple[0], couple[1])
     for couple in couples:
         categorical_bivariate(df_lots.copy(), couple[0], couple[1])
-    variables = ['cancelled', 'outOfDirectives', 'onBehalf', 'jointProcurement', 'fraAgreement',
-                 'accelerated', 'contractorSme', 'subContracted', 'gpa', 'typeOfContract', 'cpv_name']
+    variables = ['cancelled', 'outOfDirectives', 'onBehalf', 'jointProcurement', 'fraAgreement', 'fraEstimated', 'topType', 'renewal',
+                 'accelerated', 'contractorSme', 'subContracted', 'gpa', 'typeOfContract', 'cpv_name', 'multipleCae']
     create_cramer_v_heatmap(df_lots.copy(), variables)
-    #
+
     # Scatter plots for numeric variable pairs
     for pair in numeric_pairs:
         numeric_bivariate_scatter(df_lots, pair[0], pair[1])
 
     # Correlation heatmap for all numeric variables
-    numeric_vars = ['awardEstimatedPrice', 'awardPrice', 'contractDuration', 'publicityDuration']
+    numeric_vars = ['awardEstimatedPrice', 'awardPrice', 'contractDuration', 'publicityDuration', 'numberTendersSme', 'numberTenders', 'correctionsNb']
     correlation_heatmap(df_lots, numeric_vars)
