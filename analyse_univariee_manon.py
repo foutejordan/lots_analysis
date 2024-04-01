@@ -8,11 +8,7 @@ Created on Sun Feb 25 09:58:27 2024
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.pyplot import figure
 import seaborn as sns
-
-import statsmodels.formula.api as smf
-import statsmodels.api as sm
 
 from pathlib import Path
 
