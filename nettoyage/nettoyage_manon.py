@@ -54,7 +54,7 @@ def stats(target_column, version):
 
 
 def delete_rows_with_too_much_nan():
-    data_paths = ["../../data/Lots.csv", "../../data/Agents.csv", "../../data/Criteria.csv", "../../data/LotBuyers.csv", "../../data/LotSuppliers.csv", "../../data/Names.csv"]
+    data_paths = ["data/Lots.csv", "data/Agents.csv", "data/Criteria.csv", "data/LotBuyers.csv", "data/LotSuppliers.csv", "data/Names.csv"]
     new_dataframes = []
     for data_path in data_paths :
         #on enlève les lignes où il manque au moins 70% des données

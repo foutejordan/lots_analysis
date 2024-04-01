@@ -7,7 +7,7 @@ def main_function(old_df_lots_copy):
 
     new_df_lots[columns_to_parse] = new_df_lots[columns_to_parse].apply(pd.to_datetime)
 
-    for i in range(1, len(new_df_lots)):
+    for i in range(1, len(new_df_lots)-1):  # Adjusted range to prevent out-of-index error
         if pd.isnull(new_df_lots.at[i, 'awardDate']):
             prev_date = new_df_lots.at[i-1, 'awardDate']
             next_date = new_df_lots.at[i+1, 'awardDate']
@@ -17,7 +17,6 @@ def main_function(old_df_lots_copy):
             new_df_lots.at[i, 'awardDate'] = average_date
 
     return new_df_lots
-
 
 def execute_file(old_df_lots):
     new_df_lots = main_function(old_df_lots)

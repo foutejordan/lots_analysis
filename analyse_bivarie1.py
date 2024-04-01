@@ -8,8 +8,8 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-qualitatives = os.path.join(BASE_DIR, 'Lots_analysis', 'figs', 'bivarie', '2qualitatives')
-quantitatives = os.path.join(BASE_DIR, 'Lots_analysis', 'figs', 'bivarie', '2quantitatives')
+qualitatives = os.path.join(BASE_DIR, 'lots_analysis', 'figs', 'bivarie', '2qualitatives')
+quantitatives = os.path.join(BASE_DIR, 'lots_analysis', 'figs', 'bivarie', '2quantitatives')
 
 def bool_switch(row):
     if row == 'N' or row == '0' or row == 0:
