@@ -207,16 +207,10 @@ def clean_data(df_lots):
         df_lots.loc[outliers_mask, column] = median
     # end
 
-    previous_cpv = None
     for i, row in df_lots.iterrows():
         if pd.isna(row['awardEstimatedPrice']):
             # Pour les valeurs ou awardPrice existe,  remplaçons la valeur manquante de awardEstimatedPrice  par la valeur de 'awardPrice'
             df_lots.at[i, 'awardEstimatedPrice'] = row['awardPrice']
-        if not pd.isna(row['cpv']):
-            if previous_cpv is not None:
-                df_lots.at[i, 'cpv_name'] = str(previous_cpv)[:2]
-        # Mettre à jour la valeur du code CPV précédent
-        previous_cpv = row['cpv']
 
     # imputer awardEstimatedPrice and awardPrice by using iterative imputer with estimator = RandomForestRegressor
 
