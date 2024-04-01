@@ -12,9 +12,9 @@ def clean_data(df_lots):
     df_lots = df_lots.drop(columns=['accelerated'])
 
     # loop to take the 2 first digits of the cpv code
-    for i, row in df_lots.iterrows():
-        if not pd.isna(row['cpv']):
-            df_lots.at[i, 'cpv_name'] = str(row['cpv'])[:2]
+    # for i, row in df_lots.iterrows():
+    #     if not pd.isna(row['cpv']):
+    #         df_lots.at[i, 'cpv_name'] = str(row['cpv'])[:2]
 
     columns = df_lots.columns
 
