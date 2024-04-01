@@ -228,7 +228,8 @@ def clean_data(df_lots):
 
     for i, column in enumerate(['awardEstimatedPrice', 'awardPrice']):
         nan_indices = df_lots[column].index[df_lots[column].isna()]
-        df_lots.loc[nan_indices, column] = df_lots_imputed[i][nan_indices]
+        nan_indices_valid = nan_indices[nan_indices < len(df_lots_imputed[i])]
+        df_lots.loc[nan_indices_valid, column] = df_lots_imputed[i][nan_indices_valid]
 
     df_lots[columns].to_csv('data/Lots_cleaned.csv', index=False)
 
