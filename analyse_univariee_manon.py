@@ -45,7 +45,7 @@ def graph_plot_bar(dict_valeur, nombre_de_lignes, name_x, name_df):
     
     plt.savefig(entire_path)
     
-    plt.show()
+    #plt.show()
 
 
 
@@ -60,7 +60,7 @@ def density_curve(target_column, name_column, name_df):
     verif_path(entire_path)
     plt.savefig(entire_path)
 
-    plt.show()
+    #plt.show()
 
     
     
@@ -77,7 +77,7 @@ def graph_dispersion(target_column, name_column, name_df):
     verif_path(entire_path)
     plt.savefig(entire_path)
     
-    plt.show()
+    #plt.show()
     
     
 def graph_count(target_column, name_column, name_df):
@@ -94,7 +94,7 @@ def graph_count(target_column, name_column, name_df):
     verif_path(entire_path)
     plt.savefig(entire_path)
     
-    plt.show()
+    #plt.show()
 
 
 
