@@ -236,7 +236,7 @@ def clean_data(df_lots):
 
 
 if __name__ == '__main__':
-    df_lots = pd.read_csv('data/Lots.csv', dtype=str)
+    df_lots = pd.read_csv('../data/Lots.csv', dtype=str)
     df_lots_leaned = clean_data(df_lots)
     print(df_lots_leaned.isna().sum())
 
