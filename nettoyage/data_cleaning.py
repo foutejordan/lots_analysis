@@ -207,17 +207,11 @@ def clean_data(df_lots):
         df_lots.loc[outliers_mask, column] = median
     # end
 
-    previous_cpv = None
     for i, row in df_lots.iterrows():
         if pd.isna(row['awardEstimatedPrice']):
-            # Pour les valeurs ou awardPrice existe,  remplaçons la valeur manquante de awardEstimatedPrice  par la valeur de 'awardPrice'
             df_lots.at[i, 'awardEstimatedPrice'] = row['awardPrice']
-        if not pd.isna(row['cpv']):
-            if previous_cpv is not None:
-                df_lots.at[i, 'cpv_name'] = str(previous_cpv)[:2]
-        # Mettre à jour la valeur du code CPV précédent
-        previous_cpv = row['cpv']
-
+        if pd.isna(row['awardPrice']):
+            df_lots.at[i, 'awardPrice'] = row['awardEstimatedPrice']
     # imputer awardEstimatedPrice and awardPrice by using iterative imputer with estimator = RandomForestRegressor
 
     print("start imputer")
@@ -228,10 +222,16 @@ def clean_data(df_lots):
 
     for i, column in enumerate(['awardEstimatedPrice', 'awardPrice']):
         nan_indices = df_lots[column].index[df_lots[column].isna()]
+<<<<<<< HEAD
         nan_indices_valid = nan_indices[nan_indices < len(df_lots_imputed[i])]
         df_lots.loc[nan_indices_valid, column] = df_lots_imputed[i][nan_indices_valid]
+=======
+        # nan_indices_valid = nan_indices[nan_indices < len(df_lots_imputed[i])]
+        df_lots.loc[nan_indices, column] = df_lots_imputed[i][nan_indices]
+>>>>>>> 937fc112a115f6697208adf2eb5a80c6d4f0a14a
 
     df_lots[columns].to_csv('data/Lots_cleaned.csv', index=False)
+
 
     return df_lots[columns]
 
