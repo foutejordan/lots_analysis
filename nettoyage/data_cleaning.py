@@ -215,11 +215,13 @@ def clean_data(df_lots):
     # imputer awardEstimatedPrice and awardPrice by using iterative imputer by imputing only nan values
 
     print("start imputer")
+
     award_imputer = IterativeImputer(max_iter=10, random_state=0)
     award_imputer.fit(df_lots.loc[:, ['awardEstimatedPrice', 'awardPrice']])
     df_lots_imputed = award_imputer.transform(df_lots.loc[:, ['awardEstimatedPrice', 'awardPrice']])
     df_lots.loc[:, ['awardEstimatedPrice']] = df_lots_imputed[:, 0].round()
     df_lots.loc[:, ['awardPrice']] = df_lots_imputed[:, 1].round()
+
 
     # df_lots[columns].to_csv('data/Lots_cleaned.csv', index=False)
 
