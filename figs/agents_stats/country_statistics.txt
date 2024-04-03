@@ -1,5 +1,5 @@
 Mean: 2265.9714285714285
-Standard Deviation: 22583.959426419788
+Standard Deviation: 22583.959426419802
 Quantiles:
 0.25     2.0
 0.50     4.0

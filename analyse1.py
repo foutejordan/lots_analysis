@@ -5,7 +5,7 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-lots_path = os.path.join(BASE_DIR, 'Lots_analysis', 'figs', 'univarie', 'lots')
+lots_path = os.path.join(BASE_DIR, 'lots_analysis', 'figs', 'univarie', 'lots')
 
 # display distinct values for each column
 # for col in columns:
