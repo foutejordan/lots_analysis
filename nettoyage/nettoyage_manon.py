@@ -59,7 +59,12 @@ def delete_rows_with_too_much_nan():
     for data_path in data_paths :
         #on enlève les lignes où il manque au moins 70% des données
         #print(data_path)
-        dataframe = pd.read_csv(data_path, header=0, sep=',', dtype=str)
+        dataframe = pd.read_csv(data_path, dtype=str)
+        if data_path == "data/Lots.csv":
+            for i, row in dataframe.iterrows():
+                if not pd.isna(row['cpv']):
+                    dataframe.at[i, 'cpv_name'] = str(row['cpv'])[:2]
+
         count_row_to_delete = 0
         rows_to_delete = []
         count_rows = 0

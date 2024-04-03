@@ -35,10 +35,11 @@ if __name__ == '__main__':
     '''Nettoyage'''
     #Laisser commenté
     #df_agents_siret = nettoyage.add_from_siren.execute_file(df_agents)
-    #df_lots = nettoyage.dates.execute_file(df_lots)
 
     df_lots, new_agents_df, new_criteria_df, new_lotbuyers_df, new_lotsuppliers_df, new_names_df = nettoyage.nettoyage_manon.execute_file()
     df_lots = data_cleaning.clean_data(df_lots)
+    print("end imputer", df_lots['awardDate'].head(10))
+    df_lots = nettoyage.dates.execute_file(df_lots.reset_index())
 
     df_lots.to_csv('data/Lots_cleaned.csv', index=False)
     new_agents_df.to_csv('data/Agents_cleaned.csv', index=False)
