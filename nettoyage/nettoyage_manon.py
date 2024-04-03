@@ -294,7 +294,7 @@ def analyse_Lots(dataframe):
     nouveau_dataframe = dataframe.copy()
     nouveau_dataframe['lotsNumber'] = clean_values
     
-    nouveau_dataframe['publicityDuration'] = nouveau_dataframe['publicityDuration'].apply(lambda x: float(x) if float(x) >= 0 else 0)
+    nouveau_dataframe['publicityDuration'] = nouveau_dataframe['publicityDuration'].apply(lambda x: float(x) if isinstance(x, str) and float(x) >= 0 else np.nan)
 
     nouveau_dataframe['numberTendersSme'] = nouveau_dataframe['numberTendersSme'].fillna(0)
 

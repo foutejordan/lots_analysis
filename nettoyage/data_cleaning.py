@@ -6,6 +6,7 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
 
+
 def clean_data(df_lots):
     """ Traitement variable 'accelerated' """
 
@@ -27,7 +28,6 @@ def clean_data(df_lots):
     df_lots['cpv_name'] = df_lots['cpv_name'].fillna(np.random.choice(['45', '33'], p=[0.6, 0.4]))
     " enlever les lignes ou cpv_name est vide "
 
-
     """ Traitement vairable 'contractorSme' """
 
     for i, row in df_lots.iterrows():
@@ -35,7 +35,7 @@ def clean_data(df_lots):
             df_lots.at[i, 'contractorSme'] = str(row['contractorSme'])[
                 0]  # Remplacer les valeurs fausses par la première lettre de la valeur ( N ou Y) ou compter le nombre de N et Y et remplacer par la valeur la plus fréquente
 
-    print("contractorSme",df_lots['contractorSme'].value_counts())
+    print("contractorSme", df_lots['contractorSme'].value_counts())
 
     """ Traitement vairable 'fraEstimated' """
 
@@ -164,7 +164,6 @@ def clean_data(df_lots):
     label_encoder_contractorSme = LabelEncoder()
     label_encoder_typeOfContract = LabelEncoder()
 
-
     label_encoder_contractorSme.fit(df_lots.loc[:, 'contractorSme'])
     label_encoder_typeOfContract.fit(df_lots.loc[:, 'typeOfContract'])
     # cast cpv_name to int
@@ -173,22 +172,23 @@ def clean_data(df_lots):
     df_lots['contractorSme_encoded'] = label_encoder_contractorSme.transform(df_lots['contractorSme'])
     df_lots['typeOfContract_encoded'] = label_encoder_typeOfContract.transform(df_lots['typeOfContract'])
 
-    print("contractorSme",df_lots['contractorSme'].value_counts(dropna=False))
-    print("typeOfContract",df_lots['contractorSme_encoded'].value_counts(dropna=False))
+    print("contractorSme", df_lots['contractorSme'].value_counts(dropna=False))
+    print("typeOfContract", df_lots['contractorSme_encoded'].value_counts(dropna=False))
     df_lots['contractorSme_encoded'] = df_lots['contractorSme_encoded'].replace(2, np.nan)
     # start imputer
 
     c_t_imputer = IterativeImputer(max_iter=10, random_state=0)
 
     c_t_imputer.fit(df_lots.loc[:, ['contractorSme_encoded', 'typeOfContract_encoded', 'cpv_name']])
-    df_lots_imputed = c_t_imputer.transform(df_lots.loc[:, ['contractorSme_encoded', 'typeOfContract_encoded', 'cpv_name']])
+    df_lots_imputed = c_t_imputer.transform(
+        df_lots.loc[:, ['contractorSme_encoded', 'typeOfContract_encoded', 'cpv_name']])
     # replace with imputed values
     df_lots.loc[:, ['contractorSme_encoded']] = df_lots_imputed[:, 0].round()
     # inverse transform
 
-    contractorSme_imputed = list(label_encoder_contractorSme.inverse_transform(df_lots['contractorSme_encoded'].round().astype('int')))
+    contractorSme_imputed = list(
+        label_encoder_contractorSme.inverse_transform(df_lots['contractorSme_encoded'].round().astype('int')))
     df_lots['contractorSme'] = contractorSme_imputed
-
 
     """
         ###################### Traitement des variables Numériques  ##################
@@ -212,21 +212,16 @@ def clean_data(df_lots):
             df_lots.at[i, 'awardEstimatedPrice'] = row['awardPrice']
         if pd.isna(row['awardPrice']):
             df_lots.at[i, 'awardPrice'] = row['awardEstimatedPrice']
-    # imputer awardEstimatedPrice and awardPrice by using iterative imputer with estimator = RandomForestRegressor
+    # imputer awardEstimatedPrice and awardPrice by using iterative imputer by imputing only nan values
 
     print("start imputer")
-    imputer_award = IterativeImputer(max_iter=10, random_state=0)
-    imputer_award.fit(df_lots[['awardEstimatedPrice', 'awardPrice']])
+    award_imputer = IterativeImputer(max_iter=10, random_state=0)
+    award_imputer.fit(df_lots.loc[:, ['awardEstimatedPrice', 'awardPrice']])
+    df_lots_imputed = award_imputer.transform(df_lots.loc[:, ['awardEstimatedPrice', 'awardPrice']])
+    df_lots.loc[:, ['awardEstimatedPrice']] = df_lots_imputed[:, 0].round()
+    df_lots.loc[:, ['awardPrice']] = df_lots_imputed[:, 1].round()
 
-    df_lots_imputed = imputer_award.transform(df_lots[['awardEstimatedPrice', 'awardPrice']])
-
-    for i, column in enumerate(['awardEstimatedPrice', 'awardPrice']):
-        nan_indices = df_lots[column].index[df_lots[column].isna()]
-        # nan_indices_valid = nan_indices[nan_indices < len(df_lots_imputed[i])]
-        df_lots.loc[nan_indices, column] = df_lots_imputed[i][nan_indices]
-
-    df_lots[columns].to_csv('data/Lots_cleaned.csv', index=False)
-
+    # df_lots[columns].to_csv('data/Lots_cleaned.csv', index=False)
 
     return df_lots[columns]
 
@@ -235,5 +230,3 @@ if __name__ == '__main__':
     df_lots = pd.read_csv('../data/Lots.csv', dtype=str)
     df_lots_leaned = clean_data(df_lots)
     print(df_lots_leaned.isna().sum())
-
-
