@@ -3,24 +3,6 @@ import numpy as np
 import os
 
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-lots_path = os.path.join(BASE_DIR, 'lots_analysis', 'figs', 'univarie', 'lots')
-
-# display distinct values for each column
-# for col in columns:
-#     print(col, df_lots[col].unique())
-
-# pourcentage of missing values
-# missing_values = df_lots.isnull().sum() / df_lots.shape[0]
-#
-# # Calculez les statistiques standard, en fonction de la nature de la variable : moyenne, écart-type, quantiles, mode, min, max
-# for col in columns:
-#     if df_lots[col].dtype == 'float64':
-#         print(col, df_lots[col].describe())
-#     else:
-#         print(col, df_lots[col].value_counts())
-
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -66,22 +48,22 @@ def display_barplot(df, column, path):
 
 
 
-def execute_file(df_lots):
+def execute_file(df_lots, univarie_path):
     # Create a list of numerical variables
     num_vars = ['awardEstimatedPrice', 'awardPrice', 'numberTenders','numberTendersSme', 'lotsNumber']
 
     # Create a list of categorical variables
-    cat_vars = ['accelerated', 'fraEstimated', 'typeOfContract', 'cpv_name', 'onBehalf', 'jointProcurement', 'fraAgreement', 'outOfDirectives', 'gpa', 'multipleCae']
+    cat_vars = ['fraEstimated', 'typeOfContract', 'cpv_name', 'onBehalf', 'jointProcurement', 'fraAgreement', 'outOfDirectives', 'gpa', 'multipleCae', 'contractorSme']
 
     for col in num_vars:
         print(f'Processing {col}')
         df_lots[col] = pd.to_numeric(df_lots[col], errors='coerce')
 
         print(df_lots[col].describe())
-        display_hist_box_loghist(df_lots, col, lots_path)
+        display_hist_box_loghist(df_lots, col, univarie_path)
 
     for col in cat_vars:
         print(f' categorical Processing {col}')
-        display_barplot(df_lots, col, lots_path)
+        display_barplot(df_lots, col, univarie_path)
         # metrics for categorical variables
         print(df_lots[col].value_counts(normalize=True) * 100)
