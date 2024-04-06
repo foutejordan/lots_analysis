@@ -190,7 +190,6 @@ def execute_file(df_lots, qualitatives_path, quantitatives_path):
         ('jointProcurement', 'gpa'),
         ('jointProcurement', 'cancelled'),
         # ('fraAgreement', 'accelerated'),
-        ('fraAgreement', 'fraEstimated'),
         ('fraAgreement', 'contractorSme'),
         ('fraAgreement', 'subContracted'),
         ('fraAgreement', 'gpa'),
@@ -229,9 +228,11 @@ def execute_file(df_lots, qualitatives_path, quantitatives_path):
         ('topType', 'outOfDirectives'),
         ('topType', 'gpa'),
         ('cpv_name', 'renewal'),
+        ('cpv_name', 'contractorSme'),
         ('renewal', 'typeOfContract'),
         ('multipleCae', 'jointProcurement'),
         ('multipleCae', 'onBehalf'),
+        ('fraEstimated','fraAgreement'),
     ]
 
     numeric_pairs = [

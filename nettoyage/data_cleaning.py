@@ -209,6 +209,16 @@ def clean_data(df_lots):
             df_lots.at[i, 'awardEstimatedPrice'] = row['awardPrice']
         if pd.isna(row['awardPrice']):
             df_lots.at[i, 'awardPrice'] = row['awardEstimatedPrice']
+    columns_to_process = ['correctionsNb', 'numberTenders', 'numberTendersSme', 'awardEstimatedPrice', 'awardPrice',
+                          'contractDuration', 'publicityDuration']
+    df_lots['awardPrice'] = pd.to_numeric(df_lots['awardPrice'], errors='coerce')
+    Q1 = df_lots['awardPrice'].quantile(0.25)
+    Q3 = df_lots['awardPrice'].quantile(0.75)
+    IQR = Q3 - Q1
+
+    outliers_mask = (df_lots['awardPrice'] < (Q1 - 2.5 * IQR)) | (df_lots['awardPrice'] > (Q3 + 2.5 * IQR))
+    median = df_lots['awardPrice'].median()
+    df_lots.loc[outliers_mask, 'awardPrice'] = median
     # imputer awardEstimatedPrice and awardPrice by using iterative imputer by imputing only nan values
 
     print("start imputer")
@@ -218,9 +228,6 @@ def clean_data(df_lots):
     # df_lots_imputed = award_imputer.transform(df_lots.loc[:, ['awardEstimatedPrice', 'awardPrice']])
     # df_lots.loc[:, ['awardEstimatedPrice']] = df_lots_imputed[:, 0].round()
     # df_lots.loc[:, ['awardPrice']] = df_lots_imputed[:, 1].round()
-
-
-    # df_lots[columns].to_csv('data/Lots_cleaned.csv', index=False)
 
     return df_lots[columns]
 

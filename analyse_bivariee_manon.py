@@ -16,7 +16,7 @@ import statsmodels.api as sm
 
 from pathlib import Path
 
-
+import scipy.stats as stats
 
 """
 
@@ -58,14 +58,45 @@ def verif_path(entire_path):
 
 
 
-def anova(xName, yName, allData):
-    #code taken from https://openclassrooms.com/fr/courses/7410486-nettoyez-et-analysez-votre-jeu-de-donnees/7428558-analysez-une-variable-quantitative-et-une-qualitative-par-anova
-    #colonne x quantitative, colonne y qualitative
-    
-   anova = smf.ols(xName+'~'+yName, data=allData).fit()
-   #print(sm.stats.anova_lm(anova, typ=2))
-   print(sm.stats.anova_lm(anova))
+# def anova(xName, yName, allData):
+#     #code taken from https://openclassrooms.com/fr/courses/7410486-nettoyez-et-analysez-votre-jeu-de-donnees/7428558-analysez-une-variable-quantitative-et-une-qualitative-par-anova
+#     #colonne x quantitative, colonne y qualitative
+#
+#    anova = smf.ols(xName+'~'+yName, data=allData).fit()
+#    #print(sm.stats.anova_lm(anova, typ=2))
+#    print(sm.stats.anova_lm(anova))
 
+def verif_anova(data, xName, yName):
+    # colonne x quantitative, colonne y qualitative
+
+    data_anova = data[[yName, xName]].dropna()
+
+    groupes = data_anova[yName].unique()
+    variances = []
+    for groupe in groupes:
+        variances.append(data_anova[data_anova[yName] == groupe][xName].var())
+
+    p_value_levene = stats.levene(*[data_anova[data_anova[yName] == groupe][xName] for groupe in groupes])[1]
+
+    p_value_shapiro = stats.shapiro(data_anova[xName])[1]
+
+    return p_value_levene > 0.05 and p_value_shapiro > 0.05
+
+
+def anova(xName, yName, allData):
+    # code taken from https://openclassrooms.com/fr/courses/7410486-nettoyez-et-analysez-votre-jeu-de-donnees/7428558-analysez-une-variable-quantitative-et-une-qualitative-par-anova
+    # colonne x quantitative, colonne y qualitative
+
+    print(verif_anova(allData, xName, yName))
+    if verif_anova(allData, xName, yName):
+        anova = smf.ols(xName + '~' + yName, data=allData).fit()
+        # print(sm.stats.anova_lm(anova, typ=2))
+        print(sm.stats.anova_lm(anova))
+    else:
+        data = allData[[yName, xName]].dropna()
+        F, p = stats.kruskal(*[group[xName].values for name, group in data.groupby(yName)])
+        print(xName, yName)
+        print(F, p)
 
 
 
@@ -89,7 +120,35 @@ def graph_violin(colonne_x, colonne_y, name_x, name_y, name_df, is_cleaned_data)
     plt.savefig(entire_path)
     
     #plt.show()
-    
+
+
+def graph_violin_log(colonne_x, colonne_y, name_x, name_y, name_df, df, is_cleaned_data):
+    # colonne_x qualitative, colonne_y quantitative
+
+    stats = df.groupby(name_x).agg({name_y: ['mean']})
+    print(stats)
+
+    plt.figure(figsize=(10, 6))
+
+    sns.violinplot(x=colonne_x, y=colonne_y, data=df)
+
+    for group, mean_value in stats.iterrows():
+        value = mean_value[name_y]['mean']
+        plt.axhline(value, color='r', linestyle='--', linewidth=1)
+
+    plt.yscale('log')
+
+    plt.title('Diagramme en violon log - ' + name_y + ' par ' + name_x)
+    plt.xlabel(name_x)
+    plt.ylabel(name_y)
+
+    entire_path = ''
+    if is_cleaned_data:
+        entire_path = '../descriptive_analysis/figs/bivarie/quantitativeVSqualitative/' + name_df + '/graph_violin_' + name_x + '_' + name_y + '.png'
+    else:
+        entire_path = 'figs/bivarie/quantitativeVSqualitative/' + name_df + '/graph_violin_' + name_x + '_' + name_y + '.png'
+    verif_path(entire_path)
+    plt.savefig(entire_path)
     
     
     
@@ -133,10 +192,10 @@ def analyse_lots(df_lots, is_cleaned_data):
     colonne_cancelled = df_lots['cancelled']
     colonne_contractorSme = df_lots['contractorSme']
     
-    graph_violin(colonne_typeOfContract, colonne_contractDuration, "typeOfContract", "contractDuration", nameDf, is_cleaned_data)
-    graph_violin(colonne_cpv, colonne_contractDuration, "cpv", "contractDuration", nameDf, is_cleaned_data)
-    graph_violin(colonne_typeOfContract, colonne_publicityDuration, "typeOfContract", "publicityDuration", nameDf, is_cleaned_data)
-    graph_violin(colonne_cancelled, colonne_awardPrice, "cancelled", "awardPrice", nameDf, is_cleaned_data)
+    graph_violin_log(colonne_typeOfContract, colonne_contractDuration, "typeOfContract", "contractDuration", nameDf, df_lots.copy(), is_cleaned_data)
+    graph_violin_log(colonne_cpv, colonne_contractDuration, "cpv", "contractDuration", nameDf, df_lots.copy(), is_cleaned_data)
+    graph_violin_log(colonne_typeOfContract, colonne_publicityDuration, "typeOfContract", "publicityDuration", nameDf, df_lots.copy(), is_cleaned_data)
+    graph_violin_log(colonne_cancelled, colonne_awardPrice, "cancelled", "awardPrice", nameDf, df_lots.copy(), is_cleaned_data)
     
     
     nouveau_dataframe = df_lots[['typeOfContract', 'contractDuration', 'publicityDuration', 'cpv', 'awardPrice', 'cancelled', 'contractorSme']].copy()
