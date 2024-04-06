@@ -11,6 +11,7 @@ import analyse_bivariee_manon
 import analyse_univariee_manon
 import nettoyage.nettoyage_manon
 import os
+import descriptive_analysis.main
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -61,5 +62,7 @@ if __name__ == '__main__':
     new_lotbuyers_df.to_csv('data/LotBuyers_cleaned.csv', index=False)
     new_lotsuppliers_df.to_csv('data/LotSuppliers_cleaned.csv', index=False)
     new_names_df.to_csv('data/Names_cleaned.csv', index=False)
+
+    descriptive_analysis.main.execute()
 
     
