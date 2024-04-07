@@ -1,0 +1,9 @@
+Mean: 274616.8
+Standard Deviation: 110710.60333906594
+Quantiles:
+0.25    211106.0
+0.50    249892.0
+0.75    331751.0
+Name: count, dtype: float64
+Min: 147629
+Max: 432706

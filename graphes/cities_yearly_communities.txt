@@ -1,0 +1,21 @@
+Communities:
+Community 1: BORDEAUX
+Community 2: PARIS
+Community 3: METZ
+Community 4: GRENOBLE
+Community 5: BOULOGNE BILLANCOURT
+Community 6: MARSEILLE
+Community 7: TOULOUSE
+Community 8: NANTES
+Community 9: DIJON
+Community 10: LILLE
+Community 11: LYON EME
+Community 12: SAINT ETIENNE
+Community 13: MONTPELLIER
+Community 14: NICE
+Community 15: STRASBOURG
+Community 16: RENNES
+Community 17: CLERMONT FERRAND
+Community 18: SAINT DENIS
+Community 19: AIX EN PROVENCE
+Community 20: NIMES

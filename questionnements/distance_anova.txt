@@ -1,0 +1,56 @@
+
+KRUSKAL results for cpv:
+
+F:  72468.14620810712, p : 0.0:
+
+KRUSKAL results for cancelled:
+
+F:  5541.037347877096, p : 1.5021032108596276e-211:
+
+KRUSKAL results for onBehalf:
+
+F:  27350.489431613114, p : 0.0:
+
+KRUSKAL results for jointProcurement:
+
+F:  28103.386958746178, p : 0.0:
+
+KRUSKAL results for fraAgreement:
+
+F:  14218.2086970311, p : 0.0:
+
+KRUSKAL results for fraEstimated:
+
+F:  8699.00209435282, p : 0.0:
+
+KRUSKAL results for outOfDirectives:
+
+F:  12293.966698044602, p : 0.0:
+
+KRUSKAL results for contractorSme:
+
+F:  47399.0782240299, p : 0.0:
+
+KRUSKAL results for subContracted:
+
+F:  17157.0500125771, p : 0.0:
+
+KRUSKAL results for gpa:
+
+F:  13289.928643738549, p : 0.0:
+
+KRUSKAL results for multipleCae:
+
+F:  28122.625994021288, p : 0.0:
+
+KRUSKAL results for typeOfContract:
+
+F:  18546.66441286103, p : 0.0:
+
+KRUSKAL results for topType:
+
+F:  9985.789485991085, p : 0.0:
+
+KRUSKAL results for renewal:
+
+F:  9153.251150048782, p : 0.0:

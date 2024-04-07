@@ -1,0 +1,5 @@
+Correlation between Distance and Quantitative Fields:
+awardPrice: -0.02165418605985432
+numberTenders: 0.03997514292758843
+contractDuration: 0.005899732849083477
+publicityDuration: -0.0025691578549528523
