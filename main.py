@@ -89,12 +89,12 @@ if __name__ == '__main__':
     df_lots_new_cpv = pd.read_csv('data/Lots_cleaned_new_cpv.csv', dtype=str)
     # questionnements.domains_location.execute_file(df_suppliers_cleaned, df_agents_cleaned, df_lots_new_cpv)
 
-    # print("Questionnement Distance")
-    # questionnements.distance.execute_file()
-    #
-    # '''Graphes'''
-    #
-    # print("Graphes Manon")
+    print("Questionnement Distance")
+    questionnements.distance.execute_file()
+
+    '''Graphes'''
+
+    print("Graphes Manon")
     graphes_manon.execute_file()
 
     print("Graphes Maxime")
