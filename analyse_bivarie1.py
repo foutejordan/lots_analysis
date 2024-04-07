@@ -6,11 +6,6 @@ import seaborn as sns
 import os
 
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-qualitatives = os.path.join(BASE_DIR, 'lots_analysis', 'figs', 'bivarie', '2qualitatives')
-quantitatives = os.path.join(BASE_DIR, 'lots_analysis', 'figs', 'bivarie', '2quantitatives')
-
 def bool_switch(row):
     if row == 'N' or row == '0' or row == 0:
         return 0
@@ -39,7 +34,7 @@ def switch(row):
         return 'NAN'
 
 
-def bool_categorical_bivariate(df, att1, att2):
+def bool_categorical_bivariate(df, att1, att2, qualitatives):
     bool_list = ('N', 'Y', 'NAN')
     df[att1] = df[att1].apply(bool_switch).astype(int)
     df[att2] = df[att2].apply(bool_switch).astype(int)
@@ -87,7 +82,7 @@ def bool_categorical_bivariate(df, att1, att2):
     return ax
 
 
-def categorical_bivariate(df, att1, att2):
+def categorical_bivariate(df, att1, att2, qualitatives):
     # Group by att1 and att2, count occurrences, and reset index
     df_grouped = df.groupby([att1, att2]).size().reset_index(name='count')
 
@@ -124,7 +119,7 @@ def calculate_cramer_v(df, att1, att2):
     return v
 
 
-def create_cramer_v_heatmap(df, variables):
+def create_cramer_v_heatmap(df, variables, qualitatives):
     correlations = pd.DataFrame(index=variables, columns=variables)
 
     for i in range(len(variables)):
@@ -142,7 +137,8 @@ def create_cramer_v_heatmap(df, variables):
     # save the plot
     plt.savefig(f'{qualitatives}/cramer_v_heatmap.png')
 
-def numeric_bivariate_scatter(df, num_var1, num_var2, num_bins=20):
+
+def numeric_bivariate_scatter(df, num_var1, num_var2, quantitatives):
     df_filtered = df[[num_var1, num_var2]].dropna()
 
     plt.figure(figsize=(10, 6))
@@ -157,7 +153,7 @@ def numeric_bivariate_scatter(df, num_var1, num_var2, num_bins=20):
     plt.savefig(f'{quantitatives}/scatter_{num_var1}_{num_var2}.png')
 
 
-def correlation_heatmap(df, num_vars):
+def correlation_heatmap(df, num_vars, quantitatives):
     plt.figure(figsize=(10, 6))
     corr_matrix = df[num_vars].corr(method='spearman')  # You can change 'spearman' to 'pearson' for Pearson correlation
     sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', fmt=".2f", linewidths=.5)
@@ -166,12 +162,13 @@ def correlation_heatmap(df, num_vars):
     # save the plot
     plt.savefig(f'{quantitatives}/num_correlation_heatmap.png')
 
-def execute_file(df_lots):
+
+def execute_file(df_lots, qualitatives_path, quantitatives_path):
     bool_couples = [
         ('outOfDirectives', 'onBehalf'),
         ('outOfDirectives', 'jointProcurement'),
         ('outOfDirectives', 'fraAgreement'),
-        ('outOfDirectives', 'accelerated'),
+        # ('outOfDirectives', 'accelerated'),
         ('outOfDirectives', 'contractorSme'),
         ('outOfDirectives', 'subContracted'),
         ('outOfDirectives', 'gpa'),
@@ -179,31 +176,30 @@ def execute_file(df_lots):
         ('outOfDirectives', 'cancelled'),
         ('onBehalf', 'jointProcurement'),
         ('onBehalf', 'fraAgreement'),
-        ('onBehalf', 'accelerated'),
+        # ('onBehalf', 'accelerated'),
         ('onBehalf', 'contractorSme'),
         ('onBehalf', 'subContracted'),
         ('onBehalf', 'gpa'),
         ('onBehalf', 'jointProcurement'),
         ('onBehalf', 'cancelled'),
         ('jointProcurement', 'fraAgreement'),
-        ('jointProcurement', 'accelerated'),
+        # ('jointProcurement', 'accelerated'),
         ('jointProcurement', 'contractorSme'),
         ('jointProcurement', 'subContracted'),
         ('jointProcurement', 'subContracted'),
         ('jointProcurement', 'gpa'),
         ('jointProcurement', 'cancelled'),
-        ('fraAgreement', 'accelerated'),
-        ('fraAgreement', 'fraEstimated'),
+        # ('fraAgreement', 'accelerated'),
         ('fraAgreement', 'contractorSme'),
         ('fraAgreement', 'subContracted'),
         ('fraAgreement', 'gpa'),
         ('fraAgreement', 'jointProcurement'),
         ('fraAgreement', 'cancelled'),
-        ('accelerated', 'contractorSme'),
-        ('accelerated', 'subContracted'),
-        ('accelerated', 'gpa'),
-        ('accelerated', 'jointProcurement'),
-        ('accelerated', 'cancelled'),
+        # ('accelerated', 'contractorSme'),
+        # ('accelerated', 'subContracted'),
+        # ('accelerated', 'gpa'),
+        # ('accelerated', 'jointProcurement'),
+        # ('accelerated', 'cancelled'),
         ('contractorSme', 'subContracted'),
         ('contractorSme', 'gpa'),
         ('contractorSme', 'jointProcurement'),
@@ -222,7 +218,7 @@ def execute_file(df_lots):
         ('typeOfContract', 'onBehalf'),
         ('typeOfContract', 'jointProcurement'),
         ('typeOfContract', 'fraAgreement'),
-        ('typeOfContract', 'accelerated'),
+        # ('typeOfContract', 'accelerated'),
         ('typeOfContract', 'contractorSme'),
         ('typeOfContract', 'subContracted'),
         ('typeOfContract', 'gpa'),
@@ -232,9 +228,11 @@ def execute_file(df_lots):
         ('topType', 'outOfDirectives'),
         ('topType', 'gpa'),
         ('cpv_name', 'renewal'),
+        ('cpv_name', 'contractorSme'),
         ('renewal', 'typeOfContract'),
         ('multipleCae', 'jointProcurement'),
         ('multipleCae', 'onBehalf'),
+        ('fraEstimated','fraAgreement'),
     ]
 
     numeric_pairs = [
@@ -248,17 +246,19 @@ def execute_file(df_lots):
     ]
 
     for couple in bool_couples:
-        bool_categorical_bivariate(df_lots.copy(), couple[0], couple[1])
+        bool_categorical_bivariate(df_lots.copy(), couple[0], couple[1], qualitatives_path)
     for couple in couples:
-        categorical_bivariate(df_lots.copy(), couple[0], couple[1])
-    variables = ['cancelled', 'outOfDirectives', 'onBehalf', 'jointProcurement', 'fraAgreement', 'fraEstimated', 'topType', 'renewal',
-                 'accelerated', 'contractorSme', 'subContracted', 'gpa', 'typeOfContract', 'cpv_name', 'multipleCae']
-    create_cramer_v_heatmap(df_lots.copy(), variables)
+        categorical_bivariate(df_lots.copy(), couple[0], couple[1], qualitatives_path)
+    variables = ['cancelled', 'outOfDirectives', 'onBehalf', 'jointProcurement', 'fraAgreement', 'fraEstimated',
+                 'topType', 'renewal',
+                  'contractorSme', 'subContracted', 'gpa', 'typeOfContract', 'cpv_name', 'multipleCae']
+    create_cramer_v_heatmap(df_lots.copy(), variables, qualitatives_path)
 
     # Scatter plots for numeric variable pairs
     for pair in numeric_pairs:
-        numeric_bivariate_scatter(df_lots, pair[0], pair[1])
+        numeric_bivariate_scatter(df_lots, pair[0], pair[1], quantitatives_path)
 
     # Correlation heatmap for all numeric variables
-    numeric_vars = ['awardEstimatedPrice', 'awardPrice', 'contractDuration', 'publicityDuration', 'numberTendersSme', 'numberTenders', 'correctionsNb']
-    correlation_heatmap(df_lots, numeric_vars)
+    numeric_vars = ['awardEstimatedPrice', 'awardPrice', 'contractDuration', 'publicityDuration', 'numberTendersSme',
+                    'numberTenders', 'correctionsNb']
+    correlation_heatmap(df_lots, numeric_vars, quantitatives_path)

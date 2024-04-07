@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-def draw_graph_award_date(df_lots_copy):
+def draw_graph_award_date(df_lots_copy, is_cleaned_data):
 
     column_name = 'awardDate'
 
@@ -22,7 +22,12 @@ def draw_graph_award_date(df_lots_copy):
     max_date = df_lots_copy[column_name].max()
 
     # Write statistical measures to a file
-    with open('figs/lots_stats/date_statistics.txt', 'w') as file:
+    path = ''
+    if is_cleaned_data:
+        path = '../descriptive_analysis/figs/univarie/Lots/'
+    else:
+        path = 'figs/univarie/Lots/'
+    with open(path+'date_statistics.txt', 'w') as file:
         file.write(f"Mean: {mean_date}\n")
         file.write(f"Standard Deviation: {std_dev_date}\n")
         file.write(f"Quantiles:\n{quantiles_date}\n")
@@ -36,8 +41,8 @@ def draw_graph_award_date(df_lots_copy):
     plt.ylabel('Frequency')
     plt.xticks(rotation=45, ha='right')
     plt.grid(True)
-    plt.savefig('figs/lots_stats/date_distribution_plot.png')
+    plt.savefig(path+'date_distribution_plot.png')
     #plt.show()
 
-def execute_file(df_lots):
-    draw_graph_award_date(df_lots.copy())
+def execute_file(df_lots, is_cleaned_data):
+    draw_graph_award_date(df_lots.copy(), is_cleaned_data)

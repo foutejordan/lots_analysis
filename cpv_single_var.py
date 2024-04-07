@@ -47,10 +47,10 @@ categories = {
     76: 'Services relatifs à l’industrie du pétrole et du gaz',
     45: 'Travaux de construction, BTP',
     18: 'Vêtements, articles chaussants, bagages et accessoires'
-    }
+}
 
-def build_csv(df_lots_copy):
 
+def build_csv(df_lots_copy, is_cleaned_data):
     # Count the occurrences of each cpv categories (first two numbers)
     df_lots_copy['cpv'] = df_lots_copy['cpv'].astype(str).str[:2]
     cpv_counts = df_lots_copy['cpv'].value_counts()
@@ -63,7 +63,12 @@ def build_csv(df_lots_copy):
     max_occurrences = cpv_counts.max()
 
     # Write statistical measures to a file
-    with open('figs/lots_stats/cpv_statistics.txt', 'w') as file:
+    path = ''
+    if is_cleaned_data:
+        path = '../descriptive_analysis/figs/univarie/Lots/'
+    else:
+        path = 'figs/univarie/Lots/'
+    with open(path + 'cpv_statistics.txt', 'w') as file:
         file.write(f"Mean: {mean_occurrences}\n")
         file.write(f"Standard Deviation: {std_dev_occurrences}\n")
         file.write(f"Quantiles:\n{quantiles_occurrences}\n")
@@ -71,39 +76,53 @@ def build_csv(df_lots_copy):
         file.write(f"Max: {max_occurrences}\n")
 
     # Write each cpv along with its count to a file
-    with open('figs/lots_stats/cpv_nb_of_appearances.csv', 'w') as file:
+    with open(path + 'cpv_nb_of_appearances.csv', 'w') as file:
         for cpv, count in cpv_counts.items():
             print(f"{cpv}, {count}", file=file)
 
-def get_nom_cpv(numero):
-        try:
-            numero = int(numero)  
-            return categories.get(numero, None)
-        except ValueError:
-            return None  
 
-def replace_numbers_by_names_csv():
-    df = pd.read_csv("figs/lots_stats/cpv_nb_of_appearances.csv", header=None)
-    df["cpv"] = df.iloc[:, 0].apply(get_nom_cpv) 
+def get_nom_cpv(numero):
+    try:
+        numero = int(numero)
+        return categories.get(numero, None)
+    except ValueError:
+        return None
+
+
+def replace_numbers_by_names_csv(is_cleaned_data):
+    path = ''
+    if is_cleaned_data:
+        path = '../descriptive_analysis/figs/univarie/Lots/'
+    else:
+        path = 'figs/univarie/Lots/'
+    df = pd.read_csv(path + "cpv_nb_of_appearances.csv", header=None)
+    df["cpv"] = df.iloc[:, 0].apply(get_nom_cpv)
     df = df.drop(columns=[0])
     df = df[[df.columns[-1]] + list(df.columns[:-1])]
     df = df.dropna(subset=["cpv"])
-    
-    df.to_csv("figs/lots_stats/cpv_categories.csv", index=False, header=False)
 
-def draw_graph():
-    df_final = pd.read_csv('figs/lots_stats/cpv_categories.csv', header=None)
+    df.to_csv(path + "cpv_categories.csv", index=False, header=False)
+
+
+def draw_graph(is_cleaned_data):
+    path = ''
+    if is_cleaned_data:
+        path = '../descriptive_analysis/figs/univarie/Lots/'
+    else:
+        path = 'figs/univarie/Lots/'
+    df_final = pd.read_csv(path + 'cpv_categories.csv', header=None)
     plt.figure(figsize=(30, 15))
     plt.bar(df_final[0], df_final[1], color='skyblue')
     plt.title('Category from CPV by Occurrence')
     plt.xlabel('Categories')
     plt.ylabel('Number of Occurrences')
     plt.xticks(rotation=90)  # Rotate x-axis labels for better readability
-    plt.tight_layout() 
-    plt.savefig('figs/lots_stats/cpv_categories_count.png')
+    plt.tight_layout()
+    plt.savefig(path + 'cpv_categories_count.png')
     #plt.show()
 
-def execute_file(df_lots):
-    build_csv(df_lots.copy())
-    replace_numbers_by_names_csv()
-    draw_graph()
+
+def execute_file(df_lots, is_cleaned_data):
+    build_csv(df_lots.copy(), is_cleaned_data)
+    replace_numbers_by_names_csv(is_cleaned_data)
+    draw_graph(is_cleaned_data)

@@ -24,7 +24,7 @@ from sklearn.impute import IterativeImputer
 
 def stats(target_column, version):
     #version 1 or 2
-    
+
     valeur_max = target_column.max()
     print("max : ",valeur_max)
     valeur_min = target_column.min()
@@ -35,16 +35,16 @@ def stats(target_column, version):
     print("std : ",valeur_std)
     valeur_var = target_column.var()
     print("var : ",valeur_var)
-    
+
     if version == 1:
-    
+
         valeur_median = target_column.median()
         print("median : ",valeur_median)
         valeur_quartiles = target_column.quantile([0.25, 0.5, 0.75])
         print("quartiles : ",valeur_quartiles)
-    
+
     if version == 2 :
-    
+
         valeur_median = np.median(target_column)
         print("median : ",valeur_median)
         series_data = pd.Series(target_column)
@@ -70,12 +70,12 @@ def delete_rows_with_too_much_nan():
         count_rows = 0
         with open(data_path, newline='') as csvfile:
             csvreader = csv.reader(csvfile)
-        
+
             for idx, row in enumerate(csvreader):
                 nan_count = sum(cell.strip() == '' for cell in row)
                 num_columns = len(row)
                 count_rows = count_rows +1
-                
+
                 if nan_count > (num_columns*60/100):
                     count_row_to_delete = count_row_to_delete +1
                     rows_to_delete.append(idx)
@@ -86,7 +86,7 @@ def delete_rows_with_too_much_nan():
     return new_dataframes
 
 
- 
+
 
 def contains_only_alphanumeric(chaine): #false si contient que des chiffres
     if chaine == "nan":
@@ -108,7 +108,7 @@ def has_other_than_numbers(chaine):
 def has_semicolon(chaine):
     semicolon = re.compile(r';')
     correspondances = semicolon.search(chaine)
-    
+
     return correspondances
 
 def has_point(chaine):
@@ -117,7 +117,7 @@ def has_point(chaine):
         return True
     else :
         return False
-    
+
 def has_hyphen_minus(chaine):
     hyphen = re.compile(r'-')
     return hyphen.search(chaine)
@@ -148,7 +148,7 @@ def remove_LOTS_NO(chaine):
 
 
 def analyse_lotsNumber(colonne_lotsNumber):
-    
+
     clean_values = []
     old_values = []
     count = 0
@@ -157,12 +157,12 @@ def analyse_lotsNumber(colonne_lotsNumber):
             print(value)"""
         old_values.append(value)
         value = remove_LOTS_NO(str(value))
-        
+
         if contains_only_alphanumeric(value):
             clean_values.append("1")
-        
+
         elif has_semicolon(value):
-            
+
             number = value.split(";")
             for i in range(len(number)):
                 if not has_other_than_numbers(number[i]):
@@ -197,7 +197,7 @@ def analyse_lotsNumber(colonne_lotsNumber):
             else :
                 clean_values.append(count)
             count= 0
-            
+
         elif has_hyphen_minus(value) and not has_semicolon(value):
             number = value.split("-")
             if len(number) > 2:
@@ -205,7 +205,7 @@ def analyse_lotsNumber(colonne_lotsNumber):
                     temp = number[i].strip()
                     if not has_other_than_numbers(temp):
                         count = count +1
-                    else : 
+                    else :
                         count = 0
                         break
                 if count == 0:
@@ -214,7 +214,7 @@ def analyse_lotsNumber(colonne_lotsNumber):
                     clean_values.append(count)
             else :
                 clean_values.append(value)
-                
+
         elif has_space(value) and not has_hyphen_minus(value) and not has_semicolon(value):
             number = value.split()
             if len(number) == 3 and has_ET(number[1]):
@@ -232,20 +232,20 @@ def analyse_lotsNumber(colonne_lotsNumber):
                 for i in range(len(number)):
                     if not has_other_than_numbers(number[i]):
                         count = count +1
-                    else : 
+                    else :
                         count = 0
                         break
             if count == 0:
                 clean_values.append(value)
             else :
                 clean_values.append(count)
-            
-            
-            
+
+
+
         else :
             clean_values.append(value)
-        
-            
+
+
     """count = 0
     for i in range(len(clean_values)) :
         #if is_nan(clean_values[i]):
@@ -256,23 +256,23 @@ def analyse_lotsNumber(colonne_lotsNumber):
             count = count +1
             print(clean_values[i], "old : ",old_values[i])
     print(count)"""
-    
+
     return clean_values
-    
-    
+
+
 
 
 
 def analyse_Lots(dataframe):
-        
+
     #dataframe = pd.read_csv('data/Lots.csv', header=0, sep=',', dtype=str)
-    
+
     colonne_lotsNumber = dataframe['lotsNumber']
     colonne_numberTenders = dataframe['numberTenders']
     colonne_numberTendersSme = dataframe['numberTendersSme']
-    
+
     colonnes = [colonne_lotsNumber, colonne_numberTenders, colonne_numberTendersSme]
-    
+
     """for colonne in colonnes :
     
         dict_valeur = colonne.value_counts()
@@ -289,46 +289,43 @@ def analyse_Lots(dataframe):
             print(valeur, occurences)"""
 
     clean_values = analyse_lotsNumber(colonne_lotsNumber)
-        
+
     dataframe = dataframe.drop('lotsNumber', axis=1)
     nouveau_dataframe = dataframe.copy()
     nouveau_dataframe['lotsNumber'] = clean_values
-    
+
     nouveau_dataframe['publicityDuration'] = nouveau_dataframe['publicityDuration'].apply(lambda x: float(x) if isinstance(x, str) and float(x) >= 0 else np.nan)
 
+    print(nouveau_dataframe['numberTendersSme'].value_counts())
     nouveau_dataframe['numberTendersSme'] = nouveau_dataframe['numberTendersSme'].fillna(0)
 
     nouveau_dataframe['contractDuration'] = nouveau_dataframe['contractDuration'].apply(lambda x: 720.0 if float(x) == 999.0 else float(x))
 
 
-    
+
     colonne_contractDuration = nouveau_dataframe['contractDuration'].astype(float)
     colonne_publicityDuration = nouveau_dataframe['publicityDuration']
     colonne_numberTendersSme = nouveau_dataframe['numberTendersSme'].astype(float)
-    
-    colones = [colonne_contractDuration, colonne_publicityDuration, colonne_numberTendersSme]
-    
+
+    colones = [colonne_contractDuration, colonne_publicityDuration, colonne_numberTendersSme] 
     print(colonne_contractDuration.describe())
-    
+
     for colonne in colones :
-        
-    
         dict_valeur = colonne.value_counts()
         print(dict_valeur)
-    
         nombre_de_lignes = len(dataframe)
         print("Nombre de lignes du dataset Lots :", nombre_de_lignes)
-    
+
         nombre_total_occurrences = dict_valeur.sum()
         print("nombre de vide : ", nombre_de_lignes - nombre_total_occurrences)
-        
+
         stats(colonne, 1)
-    
+
     return nouveau_dataframe
-    
-    
+
+
     #suivant article : https://towardsdatascience.com/iterative-imputation-with-scikit-learn-8f3eb22b1a38
-        
+
     """columns = ['tedCanId', 'correctionsNb', 'cancelled', 'awardPrice', 'cpv', 'numberTenders', 'numberTendersSme', 'contractDuration', 'publicityDuration']
     
     
@@ -375,27 +372,21 @@ def analyse_Lots(dataframe):
         
         stats(colonne, 1)"""
 
-    
-
-
-
-        
-    
 
 def analyse_criteria(dataframe):
     #criterionId : id, clé primaire
     #lotId : clé étrangère
     #weight et type : pas de vide, ni de valeurs aberrantes
     #name : 6 vide et pas de valeurs aberrantes, utilisation du mode pour remplacer les nan : PRIX
-        
+
     #dataframe = pd.read_csv('data/Criteria.csv', header=0, sep=',')
-    
+
     old_values = []
     clean_values = []
     colonne_name = dataframe['name']
     dict_colonne = {}
-    
-    
+
+
     for value in colonne_name :
         if pd.isna(value) :
             clean_values.append("PRIX")
@@ -403,24 +394,24 @@ def analyse_criteria(dataframe):
         else :
             clean_values.append(value)
             old_values.append(value)
-    
-            
+
+
     dataframe = dataframe.drop('name', axis=1)
     nouveau_dataframe = dataframe[['criterionId', 'lotId', 'weight', 'type']].copy()
     nouveau_dataframe['name'] = clean_values
-    
-    
+
+
     return nouveau_dataframe
 
 
 
-    
 
 
-            
 
 
-#2622 valeurs avec des ; dedans 
+
+
+#2622 valeurs avec des ; dedans
 # -> après 1ere passe : reste 988 (split par ; si rien d autre que des chiffres, compte le nombre de lots)
 # -> 2e passe : 675 (enlève les espace dans les split par ; si rien d autre que des chiffres, compte le nombre de lots)
 # -> 3e passe : 253 (repère en plus si il y a un "ET", compte 2 lots en plus)
@@ -441,42 +432,39 @@ def analyse_criteria(dataframe):
 
 
 #312 138 valeurs avec autre chose que des chiffre dedans dont 295 428 valeurs nan, 16 710 autres
-            
+
 #6099 chaine de caractères qui contient que lettre ou mix de lettre/chiffres
 #-> les remplace par 1 (on considère que c est un seul lot)
-        
+
 #après tout ces traitements sur les 16 710 en reste 5 478
 
-    
-    
-   
+
+
+
     #délimitateur : ; GP - / ET
-    #chaine de caractères, numéro trop grand, "8 ET 25", 
-    
-    
-    
+    #chaine de caractères, numéro trop grand, "8 ET 25",
+
+
+
 #pour numberTenders :
 #424 099 vide
 
-   
-    
-    
+
+
+
 def execute_file():
-    
+
     #ordre : lots, agents, criteria, lotbuyers, lotsuppliers, names
-    new_dataframes = delete_rows_with_too_much_nan() 
+    new_dataframes = delete_rows_with_too_much_nan()
     new_lots_df = new_dataframes[0]
     new_agents_df = new_dataframes[1]
     new_criteria_df = new_dataframes[2]
     new_lotbuyers_df = new_dataframes[3]
     new_lotsuppliers_df = new_dataframes[4]
     new_names_df = new_dataframes[5]
-    
+
     new_lots_df = analyse_Lots(new_lots_df)
     #new_criteria_df = analyse_criteria(new_criteria_df)
 
     return new_lots_df, new_agents_df, new_criteria_df, new_lotbuyers_df, new_lotsuppliers_df, new_names_df
 
-
-    
-execute_file()

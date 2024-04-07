@@ -190,40 +190,44 @@ def clean_data(df_lots):
         label_encoder_contractorSme.inverse_transform(df_lots['contractorSme_encoded'].round().astype('int')))
     df_lots['contractorSme'] = contractorSme_imputed
 
+    print("numberTendersSme before", df_lots['numberTendersSme'].unique())
+    df_lots['numberTendersSme'] = df_lots.apply(
+        lambda row: 1 if row['contractorSme'] == 'Y' else row['numberTendersSme'], axis=1)
+
+    print("numberTendersSme after", df_lots['numberTendersSme'].unique())
+
+
+    # replace column 'numberTendersSme' by 1 when if contractorSme is 'Y'
+
+
     """
         ###################### Traitement des variables Numériques  ##################
     """
-    # Remplacer les outliers par la médiane
-    columns_to_process = ['correctionsNb', 'numberTenders', 'numberTendersSme', 'awardEstimatedPrice', 'awardPrice',
-                          'contractDuration', 'publicityDuration']
-    for column in columns_to_process:
-        df_lots[column] = pd.to_numeric(df_lots[column], errors='coerce')
-        Q1 = df_lots[column].quantile(0.25)
-        Q3 = df_lots[column].quantile(0.75)
-        IQR = Q3 - Q1
-
-        outliers_mask = (df_lots[column] < (Q1 - 1.5 * IQR)) | (df_lots[column] > (Q3 + 1.5 * IQR))
-        median = df_lots[column].median()
-        df_lots.loc[outliers_mask, column] = median
-    # end
 
     for i, row in df_lots.iterrows():
         if pd.isna(row['awardEstimatedPrice']):
             df_lots.at[i, 'awardEstimatedPrice'] = row['awardPrice']
         if pd.isna(row['awardPrice']):
             df_lots.at[i, 'awardPrice'] = row['awardEstimatedPrice']
+    columns_to_process = ['correctionsNb', 'numberTenders', 'numberTendersSme', 'awardEstimatedPrice', 'awardPrice',
+                          'contractDuration', 'publicityDuration']
+    df_lots['awardPrice'] = pd.to_numeric(df_lots['awardPrice'], errors='coerce')
+    Q1 = df_lots['awardPrice'].quantile(0.25)
+    Q3 = df_lots['awardPrice'].quantile(0.75)
+    IQR = Q3 - Q1
+
+    outliers_mask = (df_lots['awardPrice'] < (Q1 - 2.5 * IQR)) | (df_lots['awardPrice'] > (Q3 + 2.5 * IQR))
+    median = df_lots['awardPrice'].median()
+    df_lots.loc[outliers_mask, 'awardPrice'] = median
     # imputer awardEstimatedPrice and awardPrice by using iterative imputer by imputing only nan values
 
     print("start imputer")
 
-    award_imputer = IterativeImputer(max_iter=10, random_state=0)
-    award_imputer.fit(df_lots.loc[:, ['awardEstimatedPrice', 'awardPrice']])
-    df_lots_imputed = award_imputer.transform(df_lots.loc[:, ['awardEstimatedPrice', 'awardPrice']])
-    df_lots.loc[:, ['awardEstimatedPrice']] = df_lots_imputed[:, 0].round()
-    df_lots.loc[:, ['awardPrice']] = df_lots_imputed[:, 1].round()
-
-
-    # df_lots[columns].to_csv('data/Lots_cleaned.csv', index=False)
+    # award_imputer = IterativeImputer(max_iter=10, random_state=0)
+    # award_imputer.fit(df_lots.loc[:, ['awardEstimatedPrice', 'awardPrice']])
+    # df_lots_imputed = award_imputer.transform(df_lots.loc[:, ['awardEstimatedPrice', 'awardPrice']])
+    # df_lots.loc[:, ['awardEstimatedPrice']] = df_lots_imputed[:, 0].round()
+    # df_lots.loc[:, ['awardPrice']] = df_lots_imputed[:, 1].round()
 
     return df_lots[columns]
 

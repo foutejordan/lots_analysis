@@ -18,8 +18,6 @@ from pathlib import Path
 
 import scipy.stats as stats
 
-
-
 """
 
 tout dans lots : 
@@ -60,6 +58,16 @@ def verif_path(entire_path):
 
 
 
+
+# def anova(xName, yName, allData):
+#     #code taken from https://openclassrooms.com/fr/courses/7410486-nettoyez-et-analysez-votre-jeu-de-donnees/7428558-analysez-une-variable-quantitative-et-une-qualitative-par-anova
+#     #colonne x quantitative, colonne y qualitative
+#
+#    anova = smf.ols(xName+'~'+yName, data=allData).fit()
+#    #print(sm.stats.anova_lm(anova, typ=2))
+#    print(sm.stats.anova_lm(anova))
+
+
 def verif_anova(data, xName, yName):
     #colonne x quantitative, colonne y qualitative
     
@@ -75,8 +83,6 @@ def verif_anova(data, xName, yName):
     p_value_shapiro = stats.shapiro(data_anova[xName])[1]
 
     return p_value_levene > 0.05 and p_value_shapiro > 0.05
-        
-         
 
 
 def anova(xName, yName, allData):
@@ -94,9 +100,7 @@ def anova(xName, yName, allData):
 
 
 
-
-
-def graph_violin(colonne_x, colonne_y, name_x, name_y, name_df):
+def graph_violin(colonne_x, colonne_y, name_x, name_y, name_df, is_cleaned_data):
     #colonne_x qualitative, colonne_y quantitative
     
     plt.figure(figsize=(10, 6))
@@ -107,44 +111,47 @@ def graph_violin(colonne_x, colonne_y, name_x, name_y, name_df):
     plt.xlabel(name_x)
     plt.ylabel(name_y)
     
-    entire_path = 'figs/'+name_df+'/graph_violin_'+name_x+'_'+name_y+'.png'
+    entire_path = ''
+    if is_cleaned_data:
+        entire_path = '../descriptive_analysis/figs/bivarie/quantitativeVSqualitative/' + name_df + '/graph_violin_' + name_x + '_' + name_y + '.png'
+    else:
+        entire_path = 'figs/bivarie/quantitativeVSqualitative/' + name_df + '/graph_violin_' + name_x + '_' + name_y + '.png'
     verif_path(entire_path)
     plt.savefig(entire_path)
     
     #plt.show()
-    
 
-def graph_violin_log(colonne_x, colonne_y, name_x, name_y, name_df, df):
-    #colonne_x qualitative, colonne_y quantitative
-    
+
+def graph_violin_log(colonne_x, colonne_y, name_x, name_y, name_df, df, is_cleaned_data):
+    # colonne_x qualitative, colonne_y quantitative
+
     stats = df.groupby(name_x).agg({name_y: ['mean']})
     print(stats)
 
-    
     plt.figure(figsize=(10, 6))
-    
-    sns.violinplot(x=colonne_x, y=colonne_y,data=df , showmeans=True)
-    
+
+    sns.violinplot(x=colonne_x, y=colonne_y, data=df)
+
     for group, mean_value in stats.iterrows():
         value = mean_value[name_y]['mean']
         plt.axhline(value, color='r', linestyle='--', linewidth=1)
 
-    
     plt.yscale('log')
-    
-    plt.title('Diagramme en violon log - '+name_y+' par '+name_x)
+
+    plt.title('Diagramme en violon log - ' + name_y + ' par ' + name_x)
     plt.xlabel(name_x)
     plt.ylabel(name_y)
-    
-    entire_path = 'figs/'+name_df+'/graph_violin_'+name_x+'_'+name_y+'.png'
+
+    entire_path = ''
+    if is_cleaned_data:
+        entire_path = '../descriptive_analysis/figs/bivarie/quantitativeVSqualitative/' + name_df + '/graph_violin_' + name_x + '_' + name_y + '.png'
+    else:
+        entire_path = 'figs/bivarie/quantitativeVSqualitative/' + name_df + '/graph_violin_' + name_x + '_' + name_y + '.png'
     verif_path(entire_path)
     plt.savefig(entire_path)
     
-
-
     
-    
-def categorical_bivariate(df, att1, att2, name_df):
+def categorical_bivariate(df, att1, att2, name_df, is_cleaned_data):
     # Group by att1 and att2, count occurrences, and reset index
     df_grouped = df.groupby([att1, att2]).size().reset_index(name='count')
 
@@ -156,7 +163,12 @@ def categorical_bivariate(df, att1, att2, name_df):
     plt.ylabel('Frequency (log scale)')
     plt.title(f'{att1} vs {att2}')
     
-    entire_path = 'figs/'+name_df+'/graph_plot_bar_'+att1+'_'+att2+'.png'
+    entire_path = ''
+    if is_cleaned_data:
+        entire_path = '../descriptive_analysis/figs/bivarie/2qualitatives/' + name_df + '/graph_plot_bar_' + att1 + '_' + att2 + '.png'
+    else:
+        entire_path = 'figs/bivarie/2qualitatives/' + name_df + '/graph_plot_bar_' + att1 + '_' + att2 + '.png'
+
     verif_path(entire_path)
     plt.savefig(entire_path)
     
@@ -164,92 +176,55 @@ def categorical_bivariate(df, att1, att2, name_df):
 
 
 
-def analyse_lots():
+def analyse_lots(df_lots, is_cleaned_data):
         
     nameDf = "Lots"
     
     types_de_donnees = {'typeOfContract':str, 'topType': str, 'renewal':str} #colonne 23
     
-    dataframe = pd.read_csv('../data/Lots.csv', header=0, sep=',', dtype=types_de_donnees)
-    colonne_typeOfContract = dataframe['typeOfContract']
-    colonne_contractDuration = dataframe['contractDuration']
-    colonne_publicityDuration = dataframe['publicityDuration']
-    colonne_cpv = dataframe['cpv'].astype(str).str[:2]
-    colonne_awardPrice = dataframe['awardPrice']
-    colonne_cancelled = dataframe['cancelled']
-    colonne_contractorSme = dataframe['contractorSme']
+    # dataframe = pd.read_csv('data/Lots.csv', header=0, sep=',', dtype=types_de_donnees)
+    colonne_typeOfContract = df_lots['typeOfContract']
+    colonne_contractDuration = df_lots['contractDuration']
+    colonne_publicityDuration = df_lots['publicityDuration']
+    colonne_cpv = df_lots['cpv'].astype(str).str[:2]
+    colonne_awardPrice = df_lots['awardPrice']
+    colonne_cancelled = df_lots['cancelled']
+    colonne_contractorSme = df_lots['contractorSme']
+    
+    graph_violin_log(colonne_typeOfContract, colonne_contractDuration, "typeOfContract", "contractDuration", nameDf, df_lots.copy(), is_cleaned_data)
+    graph_violin_log(colonne_cpv, colonne_contractDuration, "cpv", "contractDuration", nameDf, df_lots.copy(), is_cleaned_data)
+    graph_violin_log(colonne_typeOfContract, colonne_publicityDuration, "typeOfContract", "publicityDuration", nameDf, df_lots.copy(), is_cleaned_data)
+    graph_violin_log(colonne_cancelled, colonne_awardPrice, "cancelled", "awardPrice", nameDf, df_lots.copy(), is_cleaned_data)
     
     
-    graph_violin(colonne_typeOfContract, colonne_contractDuration, "typeOfContract", "contractDuration", nameDf)    
-    graph_violin_log(colonne_typeOfContract, colonne_contractDuration, "typeOfContract", "contractDuration", nameDf, dataframe)    
-    graph_violin(colonne_cpv, colonne_contractDuration, "cpv", "contractDuration", nameDf)    
-    graph_violin_log(colonne_cpv, colonne_contractDuration, "cpv", "contractDuration", nameDf, dataframe)
-    graph_violin(colonne_typeOfContract, colonne_publicityDuration, "typeOfContract", "publicityDuration", nameDf)
-    graph_violin_log(colonne_typeOfContract, colonne_publicityDuration, "typeOfContract", "publicityDuration", nameDf, dataframe)
-    graph_violin(colonne_cancelled, colonne_awardPrice, "cancelled", "awardPrice", nameDf)
-    graph_violin_log(colonne_cancelled, colonne_awardPrice, "cancelled", "awardPrice", nameDf, dataframe)
+    graph_violin(colonne_typeOfContract, colonne_contractDuration, "typeOfContract", "contractDuration", nameDf, is_cleaned_data)    
+    graph_violin(colonne_cpv, colonne_contractDuration, "cpv", "contractDuration", nameDf, is_cleaned_data)    
+    graph_violin(colonne_typeOfContract, colonne_publicityDuration, "typeOfContract", "publicityDuration", nameDf, is_cleaned_data)
+    graph_violin(colonne_cancelled, colonne_awardPrice, "cancelled", "awardPrice", nameDf, is_cleaned_data)
 
-    
-    
-    nouveau_dataframe = dataframe[['typeOfContract', 'contractDuration', 'publicityDuration', 'cpv', 'awardPrice', 'cancelled', 'contractorSme']].copy()
+    nouveau_dataframe = df_lots[['typeOfContract', 'contractDuration', 'publicityDuration', 'cpv', 'awardPrice', 'cancelled', 'contractorSme']].copy()
     nouveau_dataframe.loc[:, 'cpv'] = nouveau_dataframe['cpv'].astype(str).str[:2]
 
-    categorical_bivariate(nouveau_dataframe.copy(), "cpv", "cancelled", nameDf)
+    categorical_bivariate(nouveau_dataframe.copy(), "cpv", "cancelled", nameDf, is_cleaned_data)
     
     
     df_filtré = nouveau_dataframe[colonne_contractorSme.isin(['Y', 'N'])]
 
-    categorical_bivariate(df_filtré.copy(), "cpv", "contractorSme", nameDf)
+    categorical_bivariate(df_filtré.copy(), "cpv", "contractorSme", nameDf, is_cleaned_data)
 
-    anova('contractDuration', 'typeOfContract', dataframe)
-    anova('contractDuration', 'cpv', dataframe)
-    anova('publicityDuration', 'typeOfContract', dataframe)
-    anova('awardPrice', 'cancelled', dataframe)
+    anova('contractDuration', 'typeOfContract', df_lots)
+    anova('contractDuration', 'cpv', df_lots)
+    anova('publicityDuration', 'typeOfContract', df_lots)
+    anova('awardPrice', 'cancelled', df_lots)
     
     """print(anova(colonne_cpv, colonne_contractDuration))
     print(anova(colonne_typeOfContract, colonne_publicityDuration))
     print(anova(colonne_cancelled, colonne_awardPrice))"""
 
 
-
-def analyse_lotBuyers():
-    
-    nameDf = "LotBuyers"
-    dataframe = pd.read_csv('data/LotBuyers.csv', header=0, sep=',')
-    
-    
-    colonne_lotId = dataframe['lotId']
-    colonne_agentId = dataframe['agentId']
-    
-    categorical_bivariate(dataframe.copy(), "lotId", "agentId")
-    
+def execute_file(df_lots, is_cleaned_data):
+    analyse_lots(df_lots, is_cleaned_data)
     
 
-def analyse_lotSuppliers():
-    
-    nameDf = "LotSuppliers"
-    dataframe = pd.read_csv('data/LotSuppliers.csv', header=0, sep=',')
-    
-    
-    colonne_lotId = dataframe['lotId']
-    colonne_agentId = dataframe['agentId']
-    
-    categorical_bivariate(dataframe.copy(), "lotId", "agentId")
-    
-    
-
-
-
-
-
-def execute_file():
-    analyse_lots()
-    
-    #analyse_lotBuyers()
-    #analyse_lotSuppliers()
-    
-
-
-execute_file()
 
 
