@@ -3,7 +3,7 @@
 clone the repository
 
 ```bash
-git clone 
+git clone https://github.com/foutejordan/lots_analysis.git
 ```
 
 create a virtual environment
