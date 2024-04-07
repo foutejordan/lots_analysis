@@ -58,6 +58,7 @@ def verif_path(entire_path):
 
 
 
+
 # def anova(xName, yName, allData):
 #     #code taken from https://openclassrooms.com/fr/courses/7410486-nettoyez-et-analysez-votre-jeu-de-donnees/7428558-analysez-une-variable-quantitative-et-une-qualitative-par-anova
 #     #colonne x quantitative, colonne y qualitative
@@ -66,9 +67,10 @@ def verif_path(entire_path):
 #    #print(sm.stats.anova_lm(anova, typ=2))
 #    print(sm.stats.anova_lm(anova))
 
-def verif_anova(data, xName, yName):
-    # colonne x quantitative, colonne y qualitative
 
+def verif_anova(data, xName, yName):
+    #colonne x quantitative, colonne y qualitative
+    
     data_anova = data[[yName, xName]].dropna()
 
     groupes = data_anova[yName].unique()
@@ -84,19 +86,17 @@ def verif_anova(data, xName, yName):
 
 
 def anova(xName, yName, allData):
-    # code taken from https://openclassrooms.com/fr/courses/7410486-nettoyez-et-analysez-votre-jeu-de-donnees/7428558-analysez-une-variable-quantitative-et-une-qualitative-par-anova
-    # colonne x quantitative, colonne y qualitative
-
-    print(verif_anova(allData, xName, yName))
-    if verif_anova(allData, xName, yName):
-        anova = smf.ols(xName + '~' + yName, data=allData).fit()
-        # print(sm.stats.anova_lm(anova, typ=2))
-        print(sm.stats.anova_lm(anova))
-    else:
-        data = allData[[yName, xName]].dropna()
-        F, p = stats.kruskal(*[group[xName].values for name, group in data.groupby(yName)])
-        print(xName, yName)
-        print(F, p)
+    #code taken from https://openclassrooms.com/fr/courses/7410486-nettoyez-et-analysez-votre-jeu-de-donnees/7428558-analysez-une-variable-quantitative-et-une-qualitative-par-anova
+    #colonne x quantitative, colonne y qualitative
+    
+   print(verif_anova(allData, xName, yName))
+   if verif_anova(allData, xName, yName) :
+       anova = smf.ols(xName+'~'+yName, data=allData).fit()
+       print(sm.stats.anova_lm(anova))
+   else :
+       data = allData[[yName, xName]].dropna()
+       _, p = stats.kruskal(*[group[xName].values for name, group in data.groupby(yName)])  
+       print(xName, yName, p)
 
 
 
@@ -106,7 +106,7 @@ def graph_violin(colonne_x, colonne_y, name_x, name_y, name_df, is_cleaned_data)
     plt.figure(figsize=(10, 6))
     
     sns.violinplot(x=colonne_x, y=colonne_y)
-    
+        
     plt.title('Diagramme en violon - '+name_y+' par '+name_x)
     plt.xlabel(name_x)
     plt.ylabel(name_y)
@@ -149,7 +149,6 @@ def graph_violin_log(colonne_x, colonne_y, name_x, name_y, name_df, df, is_clean
         entire_path = 'figs/bivarie/quantitativeVSqualitative/' + name_df + '/graph_violin_' + name_x + '_' + name_y + '.png'
     verif_path(entire_path)
     plt.savefig(entire_path)
-    
     
     
 def categorical_bivariate(df, att1, att2, name_df, is_cleaned_data):
@@ -198,6 +197,11 @@ def analyse_lots(df_lots, is_cleaned_data):
     graph_violin_log(colonne_cancelled, colonne_awardPrice, "cancelled", "awardPrice", nameDf, df_lots.copy(), is_cleaned_data)
     
     
+    graph_violin(colonne_typeOfContract, colonne_contractDuration, "typeOfContract", "contractDuration", nameDf, is_cleaned_data)    
+    graph_violin(colonne_cpv, colonne_contractDuration, "cpv", "contractDuration", nameDf, is_cleaned_data)    
+    graph_violin(colonne_typeOfContract, colonne_publicityDuration, "typeOfContract", "publicityDuration", nameDf, is_cleaned_data)
+    graph_violin(colonne_cancelled, colonne_awardPrice, "cancelled", "awardPrice", nameDf, is_cleaned_data)
+
     nouveau_dataframe = df_lots[['typeOfContract', 'contractDuration', 'publicityDuration', 'cpv', 'awardPrice', 'cancelled', 'contractorSme']].copy()
     nouveau_dataframe.loc[:, 'cpv'] = nouveau_dataframe['cpv'].astype(str).str[:2]
 
@@ -218,41 +222,8 @@ def analyse_lots(df_lots, is_cleaned_data):
     print(anova(colonne_cancelled, colonne_awardPrice))"""
 
 
-
-def analyse_lotBuyers():
-    
-    nameDf = "LotBuyers"
-    dataframe = pd.read_csv('data/LotBuyers.csv', header=0, sep=',')
-
-    colonne_lotId = dataframe['lotId']
-    colonne_agentId = dataframe['agentId']
-    
-    categorical_bivariate(dataframe.copy(), "lotId", "agentId")
-    
-    
-
-def analyse_lotSuppliers():
-    
-    nameDf = "LotSuppliers"
-    dataframe = pd.read_csv('data/LotSuppliers.csv', header=0, sep=',')
-    
-    
-    colonne_lotId = dataframe['lotId']
-    colonne_agentId = dataframe['agentId']
-    
-    categorical_bivariate(dataframe.copy(), "lotId", "agentId", nameDf)
-    
-    
-
-
-
-
-
 def execute_file(df_lots, is_cleaned_data):
     analyse_lots(df_lots, is_cleaned_data)
-    
-    #analyse_lotBuyers()
-    #analyse_lotSuppliers()
     
 
 

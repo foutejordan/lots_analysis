@@ -54,7 +54,7 @@ def stats(target_column, version):
 
 
 def delete_rows_with_too_much_nan():
-    data_paths = ["data/Lots.csv", "data/Agents.csv", "data/Criteria.csv", "data/LotBuyers.csv", "data/LotSuppliers.csv", "data/Names.csv"]
+    data_paths = ["../../data/Lots.csv", "../../data/Agents.csv", "../../data/Criteria.csv", "../../data/LotBuyers.csv", "../../data/LotSuppliers.csv", "../../data/Names.csv"]
     new_dataframes = []
     for data_path in data_paths :
         #on enlève les lignes où il manque au moins 70% des données
@@ -307,13 +307,12 @@ def analyse_Lots(dataframe):
     colonne_publicityDuration = nouveau_dataframe['publicityDuration']
     colonne_numberTendersSme = nouveau_dataframe['numberTendersSme'].astype(float)
 
-    colones = [colonne_contractDuration, colonne_publicityDuration, colonne_numberTendersSme]
+    colones = [colonne_contractDuration, colonne_publicityDuration, colonne_numberTendersSme] 
+    print(colonne_contractDuration.describe())
 
     for colonne in colones :
-
-
         dict_valeur = colonne.value_counts()
-
+        print(dict_valeur)
         nombre_de_lignes = len(dataframe)
         print("Nombre de lignes du dataset Lots :", nombre_de_lignes)
 
@@ -372,12 +371,6 @@ def analyse_Lots(dataframe):
         print("nombre de vide : ", nombre_de_lignes - nombre_total_occurrences)
         
         stats(colonne, 1)"""
-
-
-
-
-
-
 
 
 def analyse_criteria(dataframe):
